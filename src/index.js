@@ -1,4 +1,4 @@
-const player1 = {
+const character1 = {
     NOME: "Mario",
     VELOCIDADE: 4,
     MANOBRABILIDADE: 3,
@@ -6,7 +6,7 @@ const player1 = {
     PONTOS: 0,
 }
 
-const player2 = {
+const character2 = {
     NOME: "Luigi",
     VELOCIDADE: 3,
     MANOBRABILIDADE: 4,
@@ -18,6 +18,67 @@ async function rollDice() {
     return Math.floor(Math.random() * 6) + 1
 }
 
+async function getRandomBlock() {
+    let random = Math.random()
+    let result
+
+    switch (true) {
+        case random < 0.33:
+            result = "RETA"
+            break
+        case random < 0.66:
+            result = "CURVA"
+            break
+        default:
+            result = "CONFRONTO"
+            break
+    }
+
+    return result
+}
+
+async function logRollResult(characterName, block, diceResult, attribute) {
+    console.log(`${characterName} 🎲 rolou um dado de ${block} ${diceResult} + ${attribute} = ${diceResult + attribute}`)
+}
+
+async function playRaceEngine(character1, character2) {
+    for (let round = 1; round <= 5; round++) {
+        console.log(`🏁 Rodada ${round}`)
+        let block = await getRandomBlock()
+        console.log(`Bloco: ${block}`)
+
+        let diceResult1 = await rollDice()
+        let diceResult2 = await rollDice()
+
+        let totalTestSkill1 = 0
+        let totalTestSkill2 = 0
+
+        if (block === "RETA") {
+            totalTestSkill1 = diceResult1 + character1.VELOCIDADE
+            totalTestSkill2 = diceResult2 + character2.VELOCIDADE
+
+            await logRollResult(character1.NOME, "velocidade", diceResult1, character1.VELOCIDADE)
+            await logRollResult(character2.NOME, "velocidade", diceResult2, character2.VELOCIDADE)
+        }
+        if (block === "CURVA") {
+            totalTestSkill1 = diceResult1 + character1.MANOBRABILIDADE
+            totalTestSkill2 = diceResult2 + character2.MANOBRABILIDADE
+
+            await logRollResult(character1.NOME, "manobrabilidade", diceResult1, character1.MANOBRABILIDADE)
+            await logRollResult(character2.NOME, "manobrabilidade", diceResult2, character2.MANOBRABILIDADE)
+        }
+        if (block === "CONFRONTO") {
+            let powerResult1 = diceResult1 + character1.PODER
+            let powerResult2 = diceResult2 + character2.PODER
+
+            await logRollResult(character1.NOME, "confronto", diceResult1, character1.PODER)
+            await logRollResult(character2.NOME, "confronto", diceResult2, character2.PODER)
+        }
+    }
+}
+
 (async function main() {
-    console.log('hello')
+    console.log(`🏁🚨 Corrida entre ${character1.NOME} e ${character2.NOME} começando...\n`)
+
+    await playRaceEngine(character1, character2)
 })()
